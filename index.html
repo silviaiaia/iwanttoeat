@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>點餐點餐點餐</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #4F46E5;
+            --success: #10B981;
+            --bg-body: #F9FAFB;
+            --text-main: #111827;
+            --text-sub: #6B7280;
+            --border: #E5E7EB;
+        }
+
+        body { 
+            font-family: 'Inter', 'Noto Sans TC', sans-serif; 
+            background: var(--bg-body); 
+            margin: 0; 
+            padding-bottom: 50px; 
+            color: var(--text-main);
+        }
+        
+        .site-header { 
+            background: rgba(255,255,255,0.95); 
+            backdrop-filter: blur(10px); 
+            padding: 15px 30px; 
+            display: flex; 
+            display: flex; 
+            flex-direction: row; 
+            align-items: center; 
+            justify-content: space-between; 
+            gap: 20px;
+            position: sticky; 
+            top: 0; 
+            z-index: 100; 
+            border-bottom: 1px solid var(--border);
+        }
+
+        .site-logo { 
+            font-weight: 800; 
+            font-size: 1.4rem; 
+            display:flex; 
+            align-items:center; 
+            gap:8px;
+            flex-shrink: 0;
+        }
+
+        .btn-create { 
+            background: #ACD6FF; 
+            color: #333; 
+            border: none; 
+            padding: 10px 24px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-weight: 600; 
+            font-size:0.95rem; 
+            transition: transform 0.1s;
+            flex-shrink: 0;
+        }
+
+        .btn-create:hover {
+            background: #003D79;
+            color: white;
+        }
+
+        .btn-create:active { 
+            transform: scale(0.98); 
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 5px;
+            flex: 1; 
+            justify-content: center;
+            overflow-x: auto;
+            padding-bottom: 0;
+        }
+
+        .nav-item {
+            padding: 8px 16px;
+            border-radius: 99px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            background: transparent;
+            color: var(--text-sub);
+            border: 1px solid transparent;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .nav-item:hover { 
+            background: #F3F4F6; 
+        }
+
+        .nav-item.active {
+            background: #ACD6FF;
+            color: #333;
+            border-color: #003D79;
+        }
+        
+        .container { 
+            max-width: 800px; 
+            margin: 40px auto; 
+            padding: 0 20px; 
+        }
+
+        .proposal-card { 
+            background: white; 
+            border-radius: 16px; 
+            padding: 24px; 
+            margin-bottom: 24px; 
+            border: 1px solid var(--border); 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02); 
+            transition: all 0.2s;
+        }
+
+        .proposal-card:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 12px 20px -5px rgba(0,0,0,0.1); 
+        }
+
+        .proposal-card.closed {
+            opacity: 0.8;
+            background: #FAFAFA;
+            border-color: #E5E7EB;
+        }
+        .proposal-card.closed .shop-name {
+            color: #666;
+            text-decoration: line-through;
+        }
+
+        .status-badge-closed {
+            background: #374151;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+        
+        .card-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: flex-start; 
+            margin-bottom: 10px; 
+        }
+
+        .shop-name { 
+            font-size: 1.5rem; 
+            font-weight: 700; 
+            margin: 0; 
+            line-height: 1.2; 
+        }
+
+        .initiator { 
+            font-size: 0.9rem; 
+            color: var(--text-sub); 
+            margin-top: 6px; 
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #D1D5DB;
+            border-radius: 10px;
+            font-size: 1rem;
+            box-sizing: border-box;
+            font-family: inherit;
+            resize: vertical;
+            transition: border-color 0.2s;
+        }
+
+        textarea:hover {
+            background: #f2f2f2;
+        }
+
+        textarea:focus {
+            border-color: #003D79;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .tags-row { 
+            display: flex;
+            gap: 8px; 
+            margin-top: 8px; 
+            align-items: center; 
+        }
+
+        .tag { 
+            font-size: 0.75rem; 
+            padding: 4px 10px; 
+            border-radius: 99px; 
+            font-weight: 600; 
+        }
+
+        .tag-lunch { 
+            background: #FFF7ED; 
+            color: #C2410C; 
+            border: 1px solid #FFEDD5; 
+        }
+
+        .tag-tea { 
+            background: #ECFDF5; 
+            color: #047857; 
+            border: 1px solid #D1FAE5; 
+        }
+        
+        .platform-badge { 
+            font-size: 0.75rem; 
+            padding: 4px 10px; 
+            border-radius: 6px;
+            font-weight: 600; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 4px;
+        }
+
+        .plat-uber { 
+            background: #06C167; 
+            color: white; 
+        }
+
+        .plat-panda { 
+            background: #D70F64; 
+            color: white; 
+        }
+
+        .plat-nidin { 
+            background: #4F46E5; 
+            color: white; 
+        }
+
+        .plat-shop { 
+            background: #F4A261; 
+            color: white; 
+        }
+
+        .plat-other { 
+            background: #6B7280; 
+            color: white; 
+        }
+
+        .total-badge { font-weight:700; font-size: 1.1rem; color: var(--text-main); background: #F3F4F6; padding: 8px 16px; border-radius: 12px;}
+
+        /* --- 新增：進度條樣式 --- */
+        .progress-area { margin-top: 15px; margin-bottom: 15px; }
+        .progress-labels { display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 6px; font-weight: 500; }
+        .progress-bg { background: #E5E7EB; border-radius: 99px; height: 8px; width: 100%; overflow: hidden; }
+        .progress-bar { height: 100%; border-radius: 99px; transition: width 0.5s ease; }
+        
+        /* 達標與未達標顏色 */
+        .bar-processing { background: #F59E0B; } /* 黃色 */
+        .bar-success { background: var(--success); } /* 綠色 */
+        .text-processing { color: #D97706; }
+        .text-success { color: var(--success); }
+
+        .info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; background: #F9FAFB; padding: 20px; border-radius: 12px; font-size: 0.95rem; color: #4B5563; margin: 20px 0;}
+        .info-item { display:flex; flex-direction:column; gap:4px; }
+        .info-label { font-size: 0.75rem; text-transform: uppercase; color: #9CA3AF; font-weight: 600; letter-spacing: 0.05em;}
+        .info-value { font-weight: 500; color: #1F2937; }
+        .menu-link { color: var(--primary); text-decoration: none; font-weight: 500; border-bottom: 1px dashed var(--primary); display: inline-block;}
+
+        .modal-overlay { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%;
+            background: rgba(0,0,0,0.6); 
+            backdrop-filter: blur(4px); 
+            display: none; 
+            justify-content: center; 
+            align-items: center; 
+            z-index: 200; 
+            opacity:0; 
+            transition: opacity 0.2s;
+        }
+
+        .modal-overlay.open { 
+            display: flex; 
+            opacity: 1; 
+        }
+        
+        .modal-box { 
+            background: white; 
+            width: 50%; 
+            height: 70%; 
+            padding: 20px; 
+            border-radius: 20px; 
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); 
+            transform: scale(0.95); 
+            transition: transform 0.2s;
+            max-height: 85vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-overlay.open .modal-box { 
+            transform: scale(1); 
+        }
+
+        .modal-box::-webkit-scrollbar { 
+            width: 14px; 
+        }
+
+        .modal-box::-webkit-scrollbar-track { 
+            background: transparent; 
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .modal-box::-webkit-scrollbar-thumb { 
+            background: #ccc; 
+            border-radius: 20px;
+            border: 4px solid transparent;
+            background-clip: content-box;
+        }
+
+        .modal-box::-webkit-scrollbar-thumb:hover { 
+            background: #bbb;
+        }
+
+        .form-row { 
+            display: flex; 
+            gap: 20px; 
+            margin-bottom: 20px; 
+        }
+
+        .form-col { 
+            flex: 1; 
+        }
+
+        .form-group { 
+            margin-bottom: 24px; 
+        }
+
+        label { 
+            display: block; 
+            margin-bottom: 5px; 
+            font-weight: 600; 
+            font-size: 0.9rem; 
+            color: #374151; 
+        }
+
+        input, select { 
+            width: 100%; 
+            padding: 12px 16px; 
+            border: 1px solid #D1D5DB; 
+            border-radius: 10px; 
+            font-size: 0.9rem; 
+            box-sizing: border-box; 
+            transition: border-color 0.2s;
+        }
+
+        input:hover, select:hover {
+            background: #f2f2f2;
+        }
+
+        input:focus, select:focus { 
+            border-color: #003D79; 
+            outline: none; 
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); 
+        }
+
+        .card-actions { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-top: 5px; 
+        }
+
+        .order-summary { 
+            font-size: 0.95rem; 
+            color: #555; 
+            font-weight: 500; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px;
+        }
+        
+        .btn-view-details { 
+            background: white;
+            border: 1px solid #D1D5DB; 
+            color: #374151; 
+            padding: 6px 10px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-size: 0.9rem; 
+            font-weight: 500; 
+        }
+
+        .btn-view-details:hover { 
+            background: #F3F4F6; 
+        }
+        
+        .btn-submit { 
+            background: #ACD6FF; 
+            color: #333; 
+            border: none; 
+            padding: 12px 24px; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            font-size: 1rem; 
+            font-weight: 500; 
+            width: 100%;
+        }
+
+        .btn-submit:hover {
+            background: #003D79;
+            color: white;
+        }
+
+        .btn-confirm {
+            background: #ACD6FF; 
+            color: #333; 
+            border: none; 
+            padding: 12px 24px; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            font-size: 1rem; 
+            font-weight: 500; 
+            width: 100%;
+        }
+
+        .btn-confirm:hover {
+            background: #003D79;
+            color: white;
+        }
+
+        .btn-cancel { 
+            background: white; 
+            border: 1px solid #E5E7EB; 
+            color: #6B7280; 
+            padding: 12px 24px; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            font-size: 1rem; 
+            font-weight: 500; 
+            width: 100%;
+        }
+
+        .btn-cancel:hover {
+            background: #f2f2f2;
+            color: #333;
+        }
+
+        .modal-actions { 
+            display: grid; 
+            grid-template-columns: 1fr 2fr;
+            gap: 15px; 
+            margin-top: 30px; 
+        }
+
+        .btn-close-order { 
+            background: white; 
+            border: 1px solid #FF7575; 
+            color: #EF4444; 
+            padding: 12px 24px; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            font-size: 1rem; 
+            font-weight: 500; 
+            transition: all 0.2s;
+            margin-right: 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        .btn-close-order:hover { 
+            background: #FF7575;
+            color: #333;
+        }
+
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 5px; 
+        }
+
+        th { 
+            text-align: left; 
+            font-size: 0.8rem; 
+            color: #9CA3AF; 
+            padding-bottom: 10px; 
+            border-bottom: 1px solid #E5E7EB; 
+        }
+
+        td { 
+            padding: 12px 0; 
+            border-bottom: 1px solid #F3F4F6; 
+            color: #374151;
+        }
+
+        tr:last-child td { 
+            border-bottom: none; 
+        }
+
+        .btn-icon { 
+            background: none; 
+            border: none; 
+            cursor: pointer; 
+            padding: 6px; 
+            border-radius: 4px; 
+            transition: background 0.2s; 
+            font-size: 1rem;
+        }
+
+        .btn-icon:hover { 
+            background: #F3F4F6; 
+        }
+
+        .btn-edit { 
+            color: var(--primary);
+             margin-right: 5px; 
+         }
+
+        .btn-delete { 
+            color: var(--danger); 
+        }
+
+        .btn-close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #9CA3AF;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .btn-close-modal:hover {
+            transform: rotate(90deg);
+        }
+
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            min-width: 250px;
+            background: white;
+            color: #333;
+            padding: 16px 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            opacity: 0;
+            transform: translateX(100%);
+            animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            border-left: 8px solid transparent;
+        }
+
+        .toast.success { border-left-color: #01B468; }
+        .toast.success .toast-icon { color: #01B468; }
+
+        .toast.error { border-left-color: #FF5151; }
+        .toast.error .toast-icon { color: #FF5151; }
+
+        .toast-icon { font-size: 1.2rem; }
+
+        @keyframes slideIn {
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes fadeOut {
+            to { opacity: 0; transform: translateY(-20px); }
+        }
+
+        @media (max-width: 800px) {
+            .site-header {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px 20px;
+            }
+            .site-logo { 
+                width: 100%; 
+                order: 1; 
+                justify-content: space-between; 
+            }
+            .nav-tabs {
+                order: 3;
+                width: 100%;
+                justify-content: flex-start;
+                padding-bottom: 5px;
+            }
+            .btn-create {
+                order: 2;
+                width: 100%;
+            }
+            .site-logo::after {
+            }
+        }
+    </style>
+</head>
+
+<body>
+<header class="site-header">
+    <div class="site-logo">點餐</div>
+
+    <div class="nav-tabs">
+        <button class="nav-item active" onclick="switchTab(this, 'ALL')">全部進行中</button>
+        <button class="nav-item" onclick="switchTab(this, '午餐')">午餐</button>
+        <button class="nav-item" onclick="switchTab(this, '下午茶')">下午茶</button>
+        <button class="nav-item" onclick="switchTab(this, '晚餐')">晚餐</button>
+        <button class="nav-item" onclick="switchTab(this, 'CLOSED')">已結單</button>
+    </div>
+
+    <button class="btn-create" onclick="openCreateModal()">＋ 發起新團購</button>
+</header>
+
+<div class="container" id="proposals-container"></div>
+
+<div id="createModal" class="modal-overlay">
+    <div class="modal-box">        
+        <div class="form-row">
+            <div class="form-col">
+                <label>發起人*</label>
+                <input type="text" id="newInitiator" placeholder="">
+            </div>
+            <div class="form-col">
+                <label>類型*</label>
+                <select id="newCategory">
+                    <option value="午餐">午餐</option>
+                    <option value="下午茶">下午茶</option>
+                    <option value="晚餐">晚餐</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-col" style="flex: 2;">
+                <label>店家名稱*</label>
+                <input type="text" id="newShopName" placeholder="">
+            </div>
+            <div class="form-col" style="flex: 1.5;">
+                <label>訂餐平台*</label>
+                <select id="newPlatform">
+                    <option value="UberEats">UberEats</option>
+                    <option value="Foodpanda">Foodpanda</option>
+                    <option value="你訂">你訂</option>
+                    <option value="店家外送">店家外送</option>
+                    <option value="其他">其他</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label>達標門檻金額</label>
+            <input type="number" id="newThreshold" placeholder="">
+        </div>
+
+        <div class="form-row">
+            <div class="form-col">
+                <label>結單時間*</label>
+                <input type="datetime-local" id="newDeadline">
+            </div>
+            <div class="form-col">
+                <label>預計送達*</label>
+                <input type="datetime-local" id="newDelivery">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>菜單連結*</label>
+            <input type="text" id="newMenuLink" placeholder="貼上網址...">
+        </div>
+
+        <div class="form-group">
+            <label>註記</label>
+            <textarea id="newRemarks" rows="3" placeholder=""></textarea>
+        </div>
+
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeModal('createModal')">取消</button>
+            <button class="btn-submit" onclick="submitProposal()">確定開團</button>
+        </div>
+    </div>
+</div>
+
+<div id="orderModal" class="modal-overlay">
+    <div class="modal-box" style="max-width: 450px;">
+        <input type="hidden" id="currentProposalId">
+        
+        <div class="form-group">
+            <label>你的名字*</label>
+            <input type="text" id="orderName">
+        </div>
+        
+        <div class="form-row">
+            <div class="form-col" style="flex: 2;">
+                <label>餐點品項*</label>
+                <input type="text" id="orderItem" placeholder="">
+            </div>
+            <div class="form-col">
+                <label>價格*</label>
+                <input type="number" id="orderPrice" placeholder="$">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>備註</label>
+            <input type="text" id="orderRemarks" placeholder="">
+        </div>
+
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeModal('orderModal')">取消</button>
+            <button class="btn-submit" onclick="submitOrder()">送出訂單</button>
+        </div>
+    </div>
+</div>
+
+<div id="editOrderModal" class="modal-overlay">
+    <div class="modal-box" style="max-width: 450px;">
+        <h2 style="margin-top:0; margin-bottom: 20px;">修改訂單</h2>
+        <input type="hidden" id="editOrderId">
+        <input type="hidden" id="editProposalId"> <div class="form-group"><label>你的名字*</label><input type="text" id="editOrderName"></div>
+        <div class="form-row">
+            <div class="form-col" style="flex: 2;"><label>餐點品項*</label><input type="text" id="editOrderItem"></div>
+            <div class="form-col"><label>價格*</label><input type="number" id="editOrderPrice"></div>
+        </div>
+        <div class="form-group"><label>備註</label><input type="text" id="editOrderRemarks"></div>
+        
+        <div class="modal-actions">
+            <button class="btn-modal-action btn-cancel" onclick="closeModal('editOrderModal')">取消</button>
+            <button class="btn-modal-action btn-confirm" onclick="submitEditOrder()">儲存修改</button>
+        </div>
+    </div>
+</div>
+
+<div id="detailsModal" class="modal-overlay">
+    <div class="modal-box large">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h2 style="margin:0;">點餐明細</h2>
+            <button class="btn-close-modal" onclick="closeModal('detailsModal')">✕</button>
+        </div>
+        <div id="detailsTableContainer">載入中...</div>
+    </div>
+</div>
+
+<script>
+    let currentFilter = 'ALL';
+
+    function showToast(message, type = 'success') {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        const icon = type === 'success' ? '' : '';
+        toast.innerHTML = `<span class="toast-icon">${icon}</span><span>${message}</span>`;
+        container.appendChild(toast);
+        setTimeout(() => {
+            toast.style.animation = 'fadeOut 0.3s forwards';
+            toast.addEventListener('animationend', () => toast.remove());
+        }, 2000);
+    }
+
+    document.addEventListener('DOMContentLoaded', loadProposals);
+
+    function switchTab(btn, filter) {
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = filter;
+        loadProposals();
+    }
+
+    async function loadProposals() {
+        const response = await fetch('/api/proposals');
+        const allProposals = await response.json();
+        const container = document.getElementById('proposals-container');
+        container.innerHTML = ''; 
+
+        const proposals = allProposals.filter(p => {
+            if (currentFilter === 'CLOSED') {
+                return p.status === 'CLOSED'; 
+            } else {
+                if (p.status === 'CLOSED') return false; 
+                if (currentFilter === 'ALL') return true;
+                return p.category === currentFilter;
+            }
+        });
+
+        if (proposals.length === 0) {
+            let emptyText = currentFilter === 'CLOSED' ? '目前沒有已結單的紀錄' : '目前沒有進行中的團購';
+            container.innerHTML = `<div style="text-align:center; padding:60px 0; color:#9CA3AF;"><h3>${emptyText}</h3></div>`;
+            return;
+        }
+
+        proposals.forEach(p => {
+            const timeStr = (t) => t ? t.replace('T', ' ').slice(5) : '--'; 
+            let platClass = 'plat-other';
+            if(p.platform === 'UberEats') platClass = 'plat-uber';
+            else if(p.platform === 'Foodpanda') platClass = 'plat-panda';
+            else if(p.platform === '你訂') platClass = 'plat-nidin';
+            else if(p.platform === '店家外送') platClass = 'plat-shop';
+            
+            let catClass = p.category === '下午茶' ? 'tag-tea' : 'tag-lunch';
+
+            // 進度條
+            let progressHtml = '';
+            if (p.threshold > 0) {
+                let percent = Math.min(100, (p.current_total / p.threshold) * 100);
+                let diff = p.threshold - p.current_total;
+                let labelText = diff <= 0 ? '🎉 已達標！' : `還差 $${diff} 達標`;
+                let barClass = diff <= 0 ? 'bar-success' : 'bar-processing';
+                let textClass = diff <= 0 ? 'text-success' : 'text-processing';
+                progressHtml = `<div class="progress-area"><div class="progress-labels"><span class="${textClass}">${labelText}</span><span style="color:#6B7280;">$${p.current_total} / $${p.threshold}</span></div><div class="progress-bg"><div class="progress-bar ${barClass}" style="width: ${percent}%;"></div></div></div>`;
+            }
+
+            let remarkHtml = p.remarks ? `<div class="remark-box"><span class="remark-icon">📢</span><span>${p.remarks}</span></div>` : '';
+
+            let cardClass = p.status === 'CLOSED' ? 'proposal-card closed' : 'proposal-card';
+            let closeBadge = p.status === 'CLOSED' ? '<span class="status-badge-closed">已結單</span>' : '';
+            
+            // 定義按鈕邏輯
+            let actionButtons = '';
+            if (p.status === 'OPEN') {
+                actionButtons = `
+                    <div style="display:flex; align-items: center;">
+                         <button class="btn-close-order" onclick="closeProposal(${p.id})">⛔ 結單</button>
+                         <button class="btn-submit" style="margin-top:0" onclick="openOrderModal(${p.id})">＋ 我要點餐</button>
+                    </div>
+                `;
+            } else {
+                actionButtons = `<button disabled style="background:#eee; color:#aaa; border:none; padding:10px; border-radius:10px; cursor:default;">🚫 無法點餐</button>`;
+            }
+
+            const html = `
+                <div class="${cardClass}">
+                    <div class="card-header">
+                        <div>
+                            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                                <h3 class="shop-name" style="margin: 0;">${p.shop_name} ${closeBadge}</h3>
+                                <div class="tags-row" style="margin: 0;">
+                                    <span class="platform-badge ${platClass}">${p.platform}</span>
+                                    <span class="tag ${catClass}">${p.category}</span>
+                                </div>
+                            </div>
+                            <div class="initiator">發起人：${p.initiator}</div>
+                        </div>
+                        <div class="total-badge">$${p.current_total}</div>
+                    </div>
+
+                    ${progressHtml}
+
+                    <div class="info-grid">
+                        <div class="info-item"><span class="info-label">結單時間</span><span class="info-value">${timeStr(p.deadline)}</span></div>
+                        <div class="info-item"><span class="info-label">預計送達</span><span class="info-value">${timeStr(p.delivery_time)}</span></div>
+                        <div class="info-item"><span class="info-label">菜單連結</span><span><a href="${p.menu_link}" target="_blank" class="menu-link">${p.menu_link || '無連結'}</a></span></div>
+                        <div class="info-item"><span class="info-label">註記</span><span class="info-value">${remarkHtml}</span></div>
+                    </div>
+                    
+                    <div class="card-actions">
+                        <div class="order-summary">
+                            <span><strong>${p.order_count}</strong> 人已點餐</span>
+                            <button class="btn-view-details" onclick="openDetailsModal(${p.id})">查看明細</button>
+                        </div>
+                        
+                        ${actionButtons}
+                    </div>
+                </div>
+            `;
+            container.innerHTML += html;
+        });
+    }
+
+    async function closeProposal(propId) {
+        if(!confirm("確定要將這筆結單嗎？\n結單後將無法再新增訂單。")) return;
+        await fetch(`/api/proposals/${propId}/close`, { method: 'PUT' });
+        loadProposals();
+        showToast("已成功結單！", "success");
+    }
+
+    // --- Modal Controls ---
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+    document.querySelectorAll('.modal-overlay').forEach(el => { el.addEventListener('click', e => { if(e.target === el) el.classList.remove('open'); }); });
+
+    function openCreateModal() {
+        document.getElementById('newInitiator').value = '';
+        document.getElementById('newShopName').value = '';
+        document.getElementById('newMenuLink').value = '';
+        document.getElementById('newThreshold').value = '';
+        document.getElementById('newRemarks').value = '';
+        document.getElementById('createModal').classList.add('open');
+        const now = new Date(); now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+        const str = now.toISOString().slice(0, 16);
+        document.getElementById('newDeadline').value = str;
+        document.getElementById('newDelivery').value = str;
+    }
+
+    function openOrderModal(id) {
+        document.getElementById('currentProposalId').value = id;
+        document.getElementById('orderName').value = '';
+        document.getElementById('orderItem').value = '';
+        document.getElementById('orderPrice').value = '';
+        document.getElementById('orderRemarks').value = '';
+        document.getElementById('orderModal').classList.add('open');
+    }
+
+    async function openDetailsModal(proposalId) {
+        document.getElementById('detailsModal').classList.add('open');
+        const container = document.getElementById('detailsTableContainer');
+        container.innerHTML = '<p>載入中...</p>';
+
+        const response = await fetch(`/api/orders/${proposalId}`);
+        const orders = await response.json();
+
+        if (orders.length === 0) {
+            container.innerHTML = '<div style="text-align:center; padding:30px; color:#999;">還沒有人點餐</div>';
+            return;
+        }
+
+        let html = `
+            <table>
+                <thead>
+                    <tr>
+                        <th width="15%">姓名</th>
+                        <th width="30%">品項</th>
+                        <th width="25%">備註</th>
+                        <th width="15%">價格</th>
+                        <th width="15%">操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+        
+        orders.forEach(o => {
+            const remarkText = o.remarks ? `<span style="color:#666; font-size:0.9em;">${o.remarks}</span>` : '';
+            html += `
+                <tr>
+                    <td>${o.user_name}</td>
+                    <td>${o.item}</td>
+                    <td>${remarkText}</td>
+                    <td>$${o.price}</td>
+                    <td>
+                        <button class="btn-icon btn-edit" title="編輯" onclick="openEditModal(${o.id}, '${o.user_name}', '${o.item}', ${o.price}, '${o.remarks || ''}', ${proposalId})">✏️</button>
+                        <button class="btn-icon btn-delete" title="刪除" onclick="deleteOrder(${o.id}, ${proposalId})">🗑️</button>
+                    </td>
+                </tr>
+            `;
+        });
+        html += '</tbody></table>';
+        container.innerHTML = html;
+    }
+
+    function openEditModal(orderId, name, item, price, remarks, proposalId) {
+        document.getElementById('editOrderId').value = orderId;
+        document.getElementById('editProposalId').value = proposalId;
+        document.getElementById('editOrderName').value = name;
+        document.getElementById('editOrderItem').value = item;
+        document.getElementById('editOrderPrice').value = price;
+        document.getElementById('editOrderRemarks').value = remarks;
+        closeModal('detailsModal');
+        document.getElementById('editOrderModal').classList.add('open');
+    }
+
+    async function submitProposal() {
+        const data = {
+            initiator: document.getElementById('newInitiator').value,
+            shop_name: document.getElementById('newShopName').value,
+            category: document.getElementById('newCategory').value,
+            platform: document.getElementById('newPlatform').value,
+            deadline: document.getElementById('newDeadline').value,
+            delivery_time: document.getElementById('newDelivery').value,
+            menu_link: document.getElementById('newMenuLink').value,
+            threshold: document.getElementById('newThreshold').value,
+            remarks: document.getElementById('newRemarks').value
+        };
+        if(!data.shop_name || !data.initiator) return showToast("請填寫所有必填欄位（*）", "error");
+
+        await fetch('/api/proposals', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) });
+        closeModal('createModal');
+        switchTab(document.querySelector('.nav-item'), 'ALL');
+        showToast("提案成功！", "success");
+    }
+
+    async function submitOrder() {
+        const data = {
+            proposal_id: document.getElementById('currentProposalId').value,
+            user_name: document.getElementById('orderName').value,
+            item: document.getElementById('orderItem').value,
+            price: document.getElementById('orderPrice').value,
+            remarks: document.getElementById('orderRemarks').value
+        };
+        if(!data.user_name || !data.item) return showToast("請填寫所有必填欄位（*）", "error");
+
+        await fetch('/api/orders', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) });
+        closeModal('orderModal');
+        loadProposals();
+        showToast("點餐成功！", "success");
+    }
+
+    async function submitEditOrder() {
+        const orderId = document.getElementById('editOrderId').value;
+        const proposalId = document.getElementById('editProposalId').value;
+        const data = {
+            user_name: document.getElementById('editOrderName').value,
+            item: document.getElementById('editOrderItem').value,
+            price: document.getElementById('editOrderPrice').value,
+            remarks: document.getElementById('editOrderRemarks').value
+        };
+        if(!data.user_name || !data.item) return showToast("資訊不完整", "error");
+
+        await fetch(`/api/orders/${orderId}`, { method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) });
+        
+        closeModal('editOrderModal');
+        loadProposals();
+        openDetailsModal(proposalId); 
+        showToast("修改成功", "success");
+    }
+
+    async function deleteOrder(orderId, proposalId) {
+        if(!confirm("確定要刪除這筆訂單嗎？")) return;
+        await fetch(`/api/orders/${orderId}`, { method: 'DELETE' });
+        
+        loadProposals();
+        openDetailsModal(proposalId);
+        showToast("已刪除訂單", "success");
+    }
+</script>
+<div id="toast-container"></div>
+</body>
+</html>
