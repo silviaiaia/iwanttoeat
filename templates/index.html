@@ -830,7 +830,7 @@
                 progressHtml = `<div class="progress-area"><div class="progress-labels"><span class="${textClass}">${labelText}</span><span style="color:#6B7280;">$${p.current_total} / $${p.threshold}</span></div><div class="progress-bg"><div class="progress-bar ${barClass}" style="width: ${percent}%;"></div></div></div>`;
             }
 
-            let remarkHtml = p.remarks ? `<div class="remark-box"><span class="remark-icon">📢</span><span>${p.remarks}</span></div>` : '';
+            let remarkHtml = p.remarks ? `<div class="remark-box"><span>${p.remarks}</span></div>` : '';
 
             let cardClass = p.status === 'CLOSED' ? 'proposal-card closed' : 'proposal-card';
             let closeBadge = p.status === 'CLOSED' ? '<span class="status-badge-closed">已結單</span>' : '';
@@ -933,6 +933,9 @@
             return;
         }
 
+        const totalCount = orders.length;
+        const totalPrice = orders.reduce((sum, order) => sum + order.price, 0);
+
         let html = `
             <table>
                 <thead>
@@ -962,7 +965,19 @@
                 </tr>
             `;
         });
-        html += '</tbody></table>';
+
+        html += `
+                </tbody>
+                <tfoot>
+                    <tr style="background-color: #F9FAFB; font-weight: bold; border-top: 2px solid #E5E7EB;">
+                        <td colspan="3" style="text-align: right; padding: 15px 10px; font-size: 1.0em;">總計 ${totalCount} 份：</td>
+                        <td align="left" style="color: #003D79; font-size: 1.0em;">$${totalPrice}</td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+        `;
+
         container.innerHTML = html;
     }
 
