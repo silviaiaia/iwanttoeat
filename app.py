@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 import sqlite3
-from datetime import datetime
+from datetime import datetime, timedelta
 
 app = Flask(__name__)
 DB_NAME = "food.db"
@@ -38,8 +38,35 @@ def init_db():
 def index():
     return render_template('index.html')
 
+def cleanup_old_data():
+    """刪除結單超過 2 天的團購與其訂單"""
+    conn = sqlite3.connect(DB_NAME)
+    c = conn.cursor()
+    
+    # 計算 2 天前的時間點
+    two_days_ago = (datetime.now() - timedelta(days=2)).strftime("%Y-%m-%d %H:%M")
+    
+    # 1. 找出符合條件的團購 ID (狀態是 CLOSED 且 建立時間早於 2 天前)
+    c.execute("SELECT id FROM proposals WHERE status='CLOSED' AND created_at < ?", (two_days_ago,))
+    rows = c.fetchall()
+    
+    if rows:
+        # 將 ID 列表轉為 tuple，例如 (1, 3, 5)
+        target_ids = [row[0] for row in rows]
+        
+        # 雖然 sqlite 支援 CASCADE，但為了保險，我們手動先刪除訂單，再刪除團購
+        # 這裡使用 executemany 比較安全
+        c.executemany("DELETE FROM orders WHERE proposal_id=?", [(i,) for i in target_ids])
+        c.executemany("DELETE FROM proposals WHERE id=?", [(i,) for i in target_ids])
+        
+        conn.commit()
+        print(f"系統自動清理了 {len(rows)} 筆過期資料")
+        
+    conn.close()
+
 @app.route('/api/proposals', methods=['GET'])
 def get_proposals():
+    cleanup_old_data()
     conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
     c.execute("SELECT * FROM proposals ORDER BY id DESC")
