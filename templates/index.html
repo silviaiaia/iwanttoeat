@@ -248,25 +248,96 @@
             color: white; 
         }
 
-        .total-badge { font-weight:700; font-size: 1.1rem; color: var(--text-main); background: #F3F4F6; padding: 8px 16px; border-radius: 12px;}
-
-        /* --- 新增：進度條樣式 --- */
-        .progress-area { margin-top: 15px; margin-bottom: 15px; }
-        .progress-labels { display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 6px; font-weight: 500; }
-        .progress-bg { background: #E5E7EB; border-radius: 99px; height: 8px; width: 100%; overflow: hidden; }
-        .progress-bar { height: 100%; border-radius: 99px; transition: width 0.5s ease; }
+        .total-badge { 
+            font-weight:700; 
+            font-size: 1.1rem; 
+            color: var(--text-main); 
+            background: #F3F4F6; 
+            padding: 8px 16px; 
+            border-radius: 12px;
+        }
         
-        /* 達標與未達標顏色 */
-        .bar-processing { background: #F59E0B; } /* 黃色 */
-        .bar-success { background: var(--success); } /* 綠色 */
-        .text-processing { color: #D97706; }
-        .text-success { color: var(--success); }
+        .progress-area { 
+            margin-top: 15px;
+            margin-bottom: 15px; 
+        }
+        
+        .progress-labels { 
+            display: flex; 
+            justify-content: space-between; 
+            font-size: 0.85rem; 
+            margin-bottom: 6px; 
+            font-weight: 500; 
+        }
+        
+        .progress-bg { 
+            background: #E5E7EB; 
+            border-radius: 99px; 
+            height: 8px; 
+            width: 100%;
+            overflow: hidden; 
+        }
+        
+        .progress-bar { 
+            height: 100%; 
+            border-radius: 99px; 
+            transition: width 0.5s ease; 
+        }
 
-        .info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; background: #F9FAFB; padding: 20px; border-radius: 12px; font-size: 0.95rem; color: #4B5563; margin: 20px 0;}
-        .info-item { display:flex; flex-direction:column; gap:4px; }
-        .info-label { font-size: 0.75rem; text-transform: uppercase; color: #9CA3AF; font-weight: 600; letter-spacing: 0.05em;}
-        .info-value { font-weight: 500; color: #1F2937; }
-        .menu-link { color: var(--primary); text-decoration: none; font-weight: 500; border-bottom: 1px dashed var(--primary); display: inline-block;}
+        .bar-processing { 
+            background: #F59E0B; 
+        }
+        
+        .bar-success { 
+            background: var(--success); 
+        }
+        
+        .text-processing { 
+            color: #D97706; 
+        }
+        
+        .text-success { 
+            color: var(--success);
+        }
+
+        .info-grid { 
+            display: grid; 
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 15px; 
+            background: #F9FAFB; 
+            padding: 20px; 
+            border-radius: 12px; 
+            font-size: 0.95rem; 
+            color: #4B5563; 
+            margin: 20px 0;
+        }
+        
+        .info-item { 
+            display:flex; 
+            flex-direction:column; 
+            gap:4px; 
+        }
+        
+        .info-label { 
+            font-size: 0.75rem; 
+            text-transform: uppercase; 
+            color: #9CA3AF; 
+            font-weight: 600; 
+            letter-spacing: 0.05em;
+        }
+        
+        .info-value {
+            font-weight: 500; 
+            color: #1F2937; 
+        }
+        
+        .menu-link { 
+            color: var(--primary); 
+            text-decoration: none; 
+            font-weight: 500; 
+            border-bottom: 1px dashed var(--primary); 
+            display: inline-block;
+        }
 
         .modal-overlay { 
             position: fixed; 
@@ -575,20 +646,38 @@
             border-left: 8px solid transparent;
         }
 
-        .toast.success { border-left-color: #01B468; }
-        .toast.success .toast-icon { color: #01B468; }
+        .toast.success { 
+            border-left-color: #01B468; 
+        }
+        
+        .toast.success .toast-icon { 
+            color: #01B468; 
+        }
 
-        .toast.error { border-left-color: #FF5151; }
-        .toast.error .toast-icon { color: #FF5151; }
+        .toast.error { 
+            border-left-color: #FF5151; 
+        }
+        
+        .toast.error .toast-icon { 
+            color: #FF5151; 
+        }
 
-        .toast-icon { font-size: 1.2rem; }
+        .toast-icon { 
+            font-size: 1.2rem; 
+        }
 
         @keyframes slideIn {
-            to { opacity: 1; transform: translateX(0); }
+            to { 
+                opacity: 1; 
+                transform: translateX(0); 
+               }
         }
 
         @keyframes fadeOut {
-            to { opacity: 0; transform: translateY(-20px); }
+            to { 
+                opacity: 0; 
+                transform: translateY(-20px); 
+            }
         }
 
         @media (max-width: 800px) {
@@ -834,8 +923,7 @@
 
             let cardClass = p.status === 'CLOSED' ? 'proposal-card closed' : 'proposal-card';
             let closeBadge = p.status === 'CLOSED' ? '<span class="status-badge-closed">已結單</span>' : '';
-            
-            // 定義按鈕邏輯
+
             let actionButtons = '';
             if (p.status === 'OPEN') {
                 actionButtons = `
@@ -894,7 +982,6 @@
         showToast("已成功結單！", "success");
     }
 
-    // --- Modal Controls ---
     function closeModal(id) { document.getElementById(id).classList.remove('open'); }
     document.querySelectorAll('.modal-overlay').forEach(el => { el.addEventListener('click', e => { if(e.target === el) el.classList.remove('open'); }); });
 
@@ -1058,4 +1145,5 @@
 </script>
 <div id="toast-container"></div>
 </body>
+
 </html>
