@@ -8,7 +8,6 @@ DB_NAME = "food.db"
 def init_db():
     conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
-    # 🟢 修改：新增 status 欄位，預設為 'OPEN'
     c.execute('''CREATE TABLE IF NOT EXISTS proposals 
                  (id INTEGER PRIMARY KEY AUTOINCREMENT, 
                   shop_name TEXT, 
@@ -39,23 +38,16 @@ def index():
     return render_template('index.html')
 
 def cleanup_old_data():
-    """刪除結單超過 2 天的團購與其訂單"""
     conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
     
-    # 計算 2 天前的時間點
     two_days_ago = (datetime.now() - timedelta(days=2)).strftime("%Y-%m-%d %H:%M")
     
-    # 1. 找出符合條件的團購 ID (狀態是 CLOSED 且 建立時間早於 2 天前)
     c.execute("SELECT id FROM proposals WHERE status='CLOSED' AND created_at < ?", (two_days_ago,))
     rows = c.fetchall()
     
     if rows:
-        # 將 ID 列表轉為 tuple，例如 (1, 3, 5)
         target_ids = [row[0] for row in rows]
-        
-        # 雖然 sqlite 支援 CASCADE，但為了保險，我們手動先刪除訂單，再刪除團購
-        # 這裡使用 executemany 比較安全
         c.executemany("DELETE FROM orders WHERE proposal_id=?", [(i,) for i in target_ids])
         c.executemany("DELETE FROM proposals WHERE id=?", [(i,) for i in target_ids])
         
@@ -91,8 +83,8 @@ def get_proposals():
             "platform": row[7],
             "threshold": row[8],
             "remarks": row[9],
-            "status": row[10],      # 🟢 新增：讀取狀態
-            "created_at": row[11],  # 注意索引往後移了
+            "status": row[10],
+            "created_at": row[11],
             "current_total": total_price,
             "order_count": order_count
         })
@@ -105,7 +97,6 @@ def add_proposal():
     conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
     threshold = int(data['threshold']) if data['threshold'] else 0
-    # 🟢 修改：寫入時 status 預設為 'OPEN'
     c.execute("""INSERT INTO proposals 
                  (shop_name, menu_link, deadline, delivery_time, category, initiator, platform, threshold, remarks, status, created_at) 
                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
@@ -116,7 +107,6 @@ def add_proposal():
     conn.close()
     return jsonify({"status": "success"})
 
-# 🟢 新增 API：結單
 @app.route('/api/proposals/<int:prop_id>/close', methods=['PUT'])
 def close_proposal(prop_id):
     conn = sqlite3.connect(DB_NAME)
@@ -126,7 +116,6 @@ def close_proposal(prop_id):
     conn.close()
     return jsonify({"status": "success"})
 
-# ... (以下的 orders 相關 API 維持不變) ...
 @app.route('/api/orders/<int:proposal_id>', methods=['GET'])
 def get_orders(proposal_id):
     conn = sqlite3.connect(DB_NAME)
@@ -169,4 +158,5 @@ def delete_order(order_id):
 
 if __name__ == '__main__':
     init_db()
+
     app.run(debug=True, host='0.0.0.0', port=5001)
